@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -5,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const session = require("express-session");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
@@ -14,7 +15,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Session setup (for local project demonstration)
 app.use(session({
-    secret: "cem-demo-secret-change-later",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -25,7 +26,7 @@ app.use(session({
 }));
 
 // MongoDB connection
-mongoose.connect("mongodb://127.0.0.1:27017/CEM_db")
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected successfully!"))
     .catch((err) => console.log("MongoDB connection error:", err));
 
@@ -332,7 +333,7 @@ mongoose.connection.once("open", async () => {
     try {
         await addSampleProducts();
 
-        app.listen(PORT, () => {
+        app.listen(PORT, "0.0.0.0", () => {
             console.log(
                 `CEM server running at http://localhost:${PORT}`
             );
